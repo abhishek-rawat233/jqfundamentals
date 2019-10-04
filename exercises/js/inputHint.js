@@ -1,23 +1,33 @@
-var $input = $('.input_text');
-var $hintVal = $('form label').text();
-// Set the value of the search input to the text of the label element
-$input.val($hintVal);
-
-// Add a class of "hint" to the search input
-$input.addClass('hint');
-
-// Remove the label element
-$('label[for="q"]').remove();
-
-// Bind a focus event to the search input that removes the hint text and the "hint" class
-$input.bind('focus', function() {
-  $input.val("").remove('hint');
-});
-
-// Bind a blur event to the search input that restores the hint text and "hint" class if no search text was entered
-$input.bind('blur', function() {
-  if (!$.trim($input.val())) {
-    $input.val($hintVal)
-      .addClass('hint');
+class Hint {
+  constructor(searchInput, searchLabel, klassName){
+    this.searchInput = $(searchInput);
+    this.searchLabel = $(searchLabel);
+    this.searchText = $(searchLabel).text();
+    this.klassName = klassName;
   }
-});
+
+  focusBinder(element, elementClass){
+    element.bind('focus', function() {
+      element.searchInput.val("").remove(elementClass);
+    });
+  }
+
+  blurBinder(element, elementValue, elementClass){
+    element.bind('blur', function() {
+      if (!$.trim(element.val())) {
+        element.val(elementValue)
+          .addClass(elementClass);
+      }
+    });
+  }
+
+  init(){
+    this.searchInput.val(this.searchText);
+    this.searchInput.addClass(this.klassName);
+    this.searchLabel.remove();
+    this.focusBinder(this.searchInput, this.klassName);
+    this.blurBinder(this.searchInput, this.searchText, this.klassName);
+  }
+}
+
+(new Hint('.input_text', 'form label')).init();
